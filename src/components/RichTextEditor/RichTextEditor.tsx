@@ -11,13 +11,7 @@
  *  - `onChange` emits a plain `RichTextRecord` instead of an `RichText` class
  */
 
-import {
-  useEffect,
-  useImperativeHandle,
-  useMemo,
-  type HTMLAttributes,
-  type Ref,
-} from 'react'
+import { useEffect, useImperativeHandle, useMemo, type HTMLAttributes, type Ref } from 'react'
 import { EditorContent, useEditor, type JSONContent } from '@tiptap/react'
 import { Document } from '@tiptap/extension-document'
 import { Paragraph } from '@tiptap/extension-paragraph'
@@ -68,8 +62,7 @@ export interface RichTextEditorRef {
 
 // ─── Component Props ─────────────────────────────────────────────────────────
 
-export interface RichTextEditorProps
-  extends Omit<HTMLAttributes<HTMLDivElement>, 'onChange'> {
+export interface RichTextEditorProps extends Omit<HTMLAttributes<HTMLDivElement>, 'onChange'> {
   /**
    * Initial richtext value. The editor is pre-populated with this content on mount.
    * This is an uncontrolled initial state — use `onChange` to track updates.
@@ -218,9 +211,7 @@ function toInitialHTML(value: RichTextRecord | string | undefined): string {
   // internal Main[] but lacks the index signature that atproto adds.
   // We also guard against undefined since exactOptionalPropertyTypes is enabled.
   const atpFacets = facets as unknown as AtpRichText['facets']
-  const rt = new AtpRichText(
-    atpFacets ? { text, facets: atpFacets } : { text },
-  )
+  const rt = new AtpRichText(atpFacets ? { text, facets: atpFacets } : { text })
   let html = ''
 
   for (const segment of rt.segments()) {
@@ -255,10 +246,7 @@ function escapeHTML(str: string): string {
  *
  * Directly mirrors `editorJsonToText` from the Bluesky reference.
  */
-function editorJsonToText(
-  json: JSONContent,
-  isLastDocumentChild = false,
-): string {
+function editorJsonToText(json: JSONContent, isLastDocumentChild = false): string {
   let text = ''
 
   if (json.type === 'doc') {
@@ -410,17 +398,22 @@ export function RichTextEditor({
           ? {
               defaultRendererOptions: {
                 ...(mentionSuggestionOptions ?? {}),
-                ...(suggestionClassNames !== undefined
-                  ? { classNames: suggestionClassNames }
-                  : {}),
+                ...(suggestionClassNames !== undefined ? { classNames: suggestionClassNames } : {}),
               },
             }
           : {}),
       }),
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [mentionQuery, placeholder, renderMentionSuggestion, mentionSuggestionOptions,
-     linkClass, mentionClass, suggestionClassNamesKey],
+    [
+      mentionQuery,
+      placeholder,
+      renderMentionSuggestion,
+      mentionSuggestionOptions,
+      linkClass,
+      mentionClass,
+      suggestionClassNamesKey,
+    ],
   )
 
   const editor = useEditor(
@@ -428,6 +421,14 @@ export function RichTextEditor({
       extensions,
       editable,
       content: toInitialHTML(initialValue),
+
+      /**
+       * Disable immediate rendering to prevent SSR/hydration issues in Next.js,
+       * Remix, and other server-rendering frameworks. The editor defers rendering
+       * until after the component mounts on the client.
+       * @see https://github.com/ueberdosis/tiptap/issues/5856
+       */
+      immediatelyRender: false,
 
       /**
        * Clipboard text serialisation: use '\n' as the block separator so
@@ -488,9 +489,7 @@ export function RichTextEditor({
         // signature but is structurally identical to our public Facet type.
         const record: RichTextRecord = {
           text: rt.text,
-          ...(rt.facets?.length
-            ? { facets: rt.facets as unknown as Facet[] }
-            : {}),
+          ...(rt.facets?.length ? { facets: rt.facets as unknown as Facet[] } : {}),
         }
 
         onChange(record)
