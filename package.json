@@ -1,6 +1,6 @@
 {
   "name": "bsky-richtext-react",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "React components for rendering and editing Bluesky richtext content (app.bsky.richtext lexicon)",
   "author": "satyam-mishra-pce",
   "license": "MIT",

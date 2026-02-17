@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.0.1] — 2026-02-17
+
+### Fixed
+
+- **`<RichTextEditor>`** — added `immediatelyRender: false` to the internal `useEditor` call to prevent the `Cannot read properties of undefined (reading 'localsInner')` crash when rendering in SSR environments (Next.js, Remix, etc.). The editor now defers DOM initialisation until after the component mounts on the client. ([#5856](https://github.com/ueberdosis/tiptap/issues/5856))
+
+---
+
 ## [1.0.0] — 2026-02-17
 
 First stable release. 🎉
@@ -98,4 +106,5 @@ First stable release. 🎉
 
 ---
 
+[1.0.1]: https://github.com/satyam-mishra-pce/bsky-richtext-react/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/satyam-mishra-pce/bsky-richtext-react/releases/tag/v1.0.0
