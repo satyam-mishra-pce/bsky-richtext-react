@@ -84,7 +84,8 @@
     "@tiptap/extension-paragraph": "^2.11.5",
     "@tiptap/extension-placeholder": "^2.11.5",
     "@tiptap/extension-text": "^2.11.5",
-    "@tiptap/react": "^2.11.5"
+    "@tiptap/react": "^2.11.5",
+    "tippy.js": "^6.3.7"
   },
   "devDependencies": {
     "@eslint/js": "^9.18.0",
@@ -100,6 +101,7 @@
     "@testing-library/user-event": "^14.5.2",
     "@types/react": "^19.0.7",
     "@types/react-dom": "^19.0.3",
+    "@types/tippy.js": "^6.3.0",
     "@vitejs/plugin-react": "^4.3.4",
     "@vitest/coverage-v8": "^3.0.2",
     "@vitest/ui": "^3.0.2",

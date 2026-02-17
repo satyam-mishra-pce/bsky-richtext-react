@@ -14,6 +14,7 @@
         "@tiptap/extension-placeholder": "^2.11.5",
         "@tiptap/extension-text": "^2.11.5",
         "@tiptap/react": "^2.11.5",
+        "tippy.js": "^6.3.7",
       },
       "devDependencies": {
         "@eslint/js": "^9.18.0",
@@ -29,6 +30,7 @@
         "@testing-library/user-event": "^14.5.2",
         "@types/react": "^19.0.7",
         "@types/react-dom": "^19.0.3",
+        "@types/tippy.js": "^6.3.0",
         "@vitejs/plugin-react": "^4.3.4",
         "@vitest/coverage-v8": "^3.0.2",
         "@vitest/ui": "^3.0.2",
@@ -405,6 +407,8 @@
     "@types/react-dom": ["@types/react-dom@19.2.3", "", { "peerDependencies": { "@types/react": "^19.2.0" } }, "sha512-jp2L/eY6fn+KgVVQAOqYItbF0VY/YApe5Mz2F0aykSO8gx31bYCZyvSeYxCHKvzHG5eZjc+zyaS5BrBWya2+kQ=="],
 
     "@types/resolve": ["@types/resolve@1.20.6", "", {}, "sha512-A4STmOXPhMUtHH+S6ymgE2GiBSMqf4oTvcQZMcHzokuTLVYzXTB8ttjcgxOVaAp2lGwEdzZ0J+cRbbeevQj1UQ=="],
+
+    "@types/tippy.js": ["@types/tippy.js@6.3.0", "", {}, "sha512-OYontJ7KwB9ijDusNOk3r1uArk35J5lOZ6Mq85L6Y9LTkiLi+GX49Q6Y8bI6DKfSE70Z+B54nUirBpudCkO+Dw=="],
 
     "@types/use-sync-external-store": ["@types/use-sync-external-store@0.0.6", "", {}, "sha512-zFDAD+tlpf2r4asuHEj0XH6pY6i0g5NeAHPn+15wk3BV6JA69eERFXC1gyGThDkVa1zCyKr5jox1+2LbV/AMLg=="],
 

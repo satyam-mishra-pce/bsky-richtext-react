@@ -3,23 +3,26 @@
  *
  * Import this file in your app for essential layout styles.
  * These rules define structure and positioning only — no colors,
- * fonts, or visual decoration. Override freely.
+ * fonts, or visual decoration. Override freely with your own styles.
  *
  * Usage:
  *   import 'bsky-richtext-react/styles.css'
+ *
+ * Visual styling guide:
+ *   See README.md for example selectors to style each part of the components.
  */
 
 /* ─── RichTextDisplay ────────────────────────────────────────────────────── */
 
 [data-bsky-richtext] {
-  /* Inline-block so the span respects its parent's flow but wraps correctly */
+  /* Inline so the span respects the parent's flow and wraps naturally */
   display: inline;
-  /* Allow long URLs and handles to break naturally */
+  /* Allow long URLs and handles to break at word boundaries */
   word-break: break-word;
   overflow-wrap: break-word;
 }
 
-/* Facet wrapper spans — no block-level layout shift */
+/* Facet wrapper spans — stay inline, no block-level layout shift */
 [data-bsky-richtext] [data-bsky-mention],
 [data-bsky-richtext] [data-bsky-link],
 [data-bsky-richtext] [data-bsky-tag] {
@@ -33,39 +36,129 @@
   display: block;
   width: 100%;
   box-sizing: border-box;
+  /* Establish a positioning context for any absolutely-positioned children */
+  position: relative;
 }
 
-/* The ProseMirror editable region — layout only */
+/* The ProseMirror editable region */
 [data-bsky-richtext-editor] .ProseMirror {
   display: block;
   width: 100%;
   box-sizing: border-box;
-  /* Remove the browser's default focus outline — consumers add their own */
+  /* Remove browser's default focus outline — consumers provide their own */
   outline: none;
-  /* Ensure the editor is at least one line tall even when empty */
+  /* At least one line tall when empty, so clicks register */
   min-height: 1em;
 }
 
-/* Paragraphs inside the editor — margin reset so spacing is consumer-controlled */
+/* Paragraphs — reset margin so consumers control spacing */
 [data-bsky-richtext-editor] .ProseMirror p {
   margin: 0;
 }
 
-/* Placeholder — positioned relative to the editor line */
+/* Placeholder — floated so it doesn't push content down */
 [data-bsky-richtext-editor] .ProseMirror p.is-editor-empty:first-child::before {
   content: attr(data-placeholder);
-  /* Float above the content, not in the flow */
   float: left;
   height: 0;
   pointer-events: none;
 }
 
-/* Mention nodes inside editor */
+/* Mention chips inside the editor */
 [data-bsky-richtext-editor] .bsky-mention {
   display: inline;
 }
 
-/* Link decorations inside editor */
+/* URL decorations inside the editor */
 [data-bsky-richtext-editor] .bsky-link {
   display: inline;
+}
+
+/* ─── Mention Suggestion Dropdown ───────────────────────────────────────── */
+/*
+ * Structural styles for the default MentionSuggestionList component.
+ * This handles layout only — no colors, borders, or fonts.
+ * Add your own visual styles using these selectors:
+ *
+ *   [data-bsky-mention-suggestions]            — outer container
+ *   [data-bsky-mention-suggestion-item]        — each suggestion row (a <button>)
+ *   [data-bsky-mention-suggestion-item][data-selected] — highlighted row
+ *   [data-bsky-mention-avatar]                 — avatar wrapper
+ *   [data-bsky-mention-avatar-img]             — <img> element
+ *   [data-bsky-mention-avatar-placeholder]     — initial-letter fallback circle
+ *   [data-bsky-mention-suggestion-text]        — text column (name + handle)
+ *   [data-bsky-mention-suggestion-name]        — display name
+ *   [data-bsky-mention-suggestion-handle]      — @handle
+ *   [data-bsky-mention-suggestion-empty]       — "No results" message
+ */
+
+[data-bsky-mention-suggestions] {
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  /* Constrain height so very long lists don't overflow the viewport */
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+[data-bsky-mention-suggestion-item] {
+  /* Full-width button row */
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
+  box-sizing: border-box;
+  cursor: pointer;
+  /* Reset button element defaults */
+  border: none;
+  background: transparent;
+  text-align: left;
+  padding: 0;
+  margin: 0;
+  /* Prevent text selection on rapid clicks */
+  user-select: none;
+}
+
+[data-bsky-mention-suggestion-text] {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0; /* allow text to truncate */
+  overflow: hidden;
+}
+
+[data-bsky-mention-suggestion-name],
+[data-bsky-mention-suggestion-handle] {
+  display: block;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* Avatar wrapper — fixed square, circular clip via consumer CSS */
+[data-bsky-mention-avatar] {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+}
+
+[data-bsky-mention-avatar-img] {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+[data-bsky-mention-avatar-placeholder] {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+[data-bsky-mention-suggestion-empty] {
+  display: block;
+  box-sizing: border-box;
 }
