@@ -7,7 +7,6 @@
  * @example
  * ```tsx
  * import { RichTextDisplay, RichTextEditor } from 'bsky-richtext-react'
- * import 'bsky-richtext-react/styles.css'
  * ```
  */
 
@@ -117,8 +116,4 @@ export type {
 
 export { isMentionFeature, isLinkFeature, isTagFeature } from './types'
 
-export type {
-  DisplayClassNames,
-  EditorClassNames,
-  SuggestionClassNames,
-} from './types'
+export type { DisplayClassNames, EditorClassNames, SuggestionClassNames } from './types'

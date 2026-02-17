@@ -292,7 +292,7 @@ function editorJsonToText(json: JSONContent, isLastDocumentChild = false): strin
  * - Undo/redo history
  * - `onChange` emits a `RichTextRecord` with `text` + `facets` populated via
  *   `detectFacetsWithoutResolution()`
- * - Headless — bring your own CSS, or use the structural defaults in styles.css
+ * - Headless by default — Tailwind utility classes are applied via the default classNames; override freely via the `classNames` prop
  *
  * @example Basic usage (built-in Bluesky mention search)
  * ```tsx

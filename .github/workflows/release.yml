@@ -60,7 +60,6 @@ jobs:
           test -f dist/index.js   || (echo "ESM output missing"   && exit 1)
           test -f dist/index.cjs  || (echo "CJS output missing"   && exit 1)
           test -f dist/index.d.ts || (echo "Types output missing" && exit 1)
-          test -f dist/styles.css || (echo "CSS output missing"   && exit 1)
           echo "All build artefacts present ✓"
 
       # ── Publish to npm ─────────────────────────────────────────────────────

@@ -2,7 +2,7 @@ import { defineConfig } from 'tsup'
 
 export default defineConfig({
   // Entry points — JS bundle + the standalone CSS file
-  entry: ['src/index.ts', 'src/styles.css'],
+  entry: ['src/index.ts'],
 
   // Output both ESM (for bundlers/modern Node) and CJS (for legacy tooling)
   format: ['esm', 'cjs'],
@@ -50,7 +50,8 @@ export default defineConfig({
   // Minify for production builds
   minify: false, // consumers' bundlers will handle this
 
-  // Bundle CSS separately (users import "./styles.css" manually)
+  // Do not inject styles — the library ships no CSS; Tailwind classes are
+  // resolved by the consumer's own Tailwind setup at build time.
   injectStyle: false,
 
   // Support path aliases matching tsconfig.json

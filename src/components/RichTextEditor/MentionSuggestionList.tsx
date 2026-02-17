@@ -4,22 +4,16 @@
  * Default built-in mention autocomplete dropdown.
  * Heavily inspired by Bluesky's social-app Autocomplete.tsx.
  *
- * This is a structural-only component — it ships with layout CSS only.
- * Consumers style it via the class selectors in styles.css, or override
- * specific parts using the `classNames` prop with `generateClassNames()`.
+ * Default classNames apply Tailwind utility classes for a ready-to-use
+ * appearance. Override specific parts using the `classNames` prop with
+ * `generateClassNames()`.
  *
  * TipTap requires the `render` factory to return lifecycle callbacks
  * ({ onStart, onUpdate, onKeyDown, onExit }). The component itself is mounted
  * via `ReactRenderer` and positioned via `tippy.js` — see createSuggestionRenderer.ts.
  */
 
-import {
-  forwardRef,
-  useEffect,
-  useImperativeHandle,
-  useMemo,
-  useState,
-} from 'react'
+import { forwardRef, useEffect, useImperativeHandle, useMemo, useState } from 'react'
 import type { SuggestionKeyDownProps, SuggestionProps } from '@tiptap/suggestion'
 import type { SuggestionClassNames } from '../../types/classNames'
 import { defaultSuggestionClassNames } from '../../defaults/classNames'
@@ -38,8 +32,7 @@ export interface MentionSuggestionListRef {
 
 // ─── Props ───────────────────────────────────────────────────────────────────
 
-export interface MentionSuggestionListProps
-  extends SuggestionProps<MentionSuggestion> {
+export interface MentionSuggestionListProps extends SuggestionProps<MentionSuggestion> {
   /**
    * Whether to render avatars when `avatarUrl` is present on a suggestion.
    * When false, avatar placeholder is hidden entirely.
@@ -83,13 +76,7 @@ export const MentionSuggestionList = forwardRef<
   MentionSuggestionListRef,
   MentionSuggestionListProps
 >(function MentionSuggestionListImpl(
-  {
-    items,
-    command,
-    showAvatars = true,
-    noResultsText = 'No results',
-    classNames: classNamesProp,
-  },
+  { items, command, showAvatars = true, noResultsText = 'No results', classNames: classNamesProp },
   ref,
 ) {
   const [selectedIndex, setSelectedIndex] = useState(0)
@@ -187,9 +174,7 @@ export const MentionSuggestionList = forwardRef<
               )}
 
               <span className={cn.text}>
-                {item.displayName && (
-                  <span className={cn.name}>{item.displayName}</span>
-                )}
+                {item.displayName && <span className={cn.name}>{item.displayName}</span>}
                 <span className={cn.handle}>@{item.handle}</span>
               </span>
             </button>

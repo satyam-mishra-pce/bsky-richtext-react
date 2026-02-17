@@ -8,10 +8,12 @@ describe('RichTextEditor', () => {
     expect(screen.getByTestId('editor-root')).toBeInTheDocument()
   })
 
-  it('has default bsky-editor class on root', () => {
+  it('has default Tailwind classes on root', () => {
     render(<RichTextEditor data-testid="editor-root" />)
     const root = screen.getByTestId('editor-root')
-    expect(root).toHaveClass('bsky-editor')
+    expect(root).toHaveClass('block')
+    expect(root).toHaveClass('w-full')
+    expect(root).toHaveClass('relative')
   })
 
   it('renders with initial plain string value', () => {
@@ -20,11 +22,7 @@ describe('RichTextEditor', () => {
   })
 
   it('renders with initial RichTextRecord value', () => {
-    render(
-      <RichTextEditor
-        initialValue={{ text: 'Initial content', facets: [] }}
-      />,
-    )
+    render(<RichTextEditor initialValue={{ text: 'Initial content', facets: [] }} />)
     expect(screen.getByText('Initial content')).toBeInTheDocument()
   })
 

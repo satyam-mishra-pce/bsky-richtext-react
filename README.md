@@ -14,7 +14,7 @@
 - **`<RichTextDisplay>`** — Render AT Protocol richtext records (`text` + `facets`) as interactive HTML. Handles @mentions, links, and #hashtags with fully customisable renderers and URL resolvers.
 - **`<RichTextEditor>`** — TipTap-based editor with real-time @mention autocomplete (powered by the **Bluesky public API** by default — no auth required), stateless URL decoration, undo/redo, and an imperative ref API.
 - **`generateClassNames()`** — Deep-merge utility for the `classNames` prop system. Pass an array of partial classNames objects and get one merged result, optionally using your own `cn()` / `clsx` / `tailwind-merge` utility.
-- **Headless by design** — Ships with layout-only CSS. Bring your own colours, fonts, and borders.
+- **Tailwind defaults, fully overridable** — Default classNames use Tailwind utility classes out of the box. Override any part via the `classNames` prop — no stylesheet import needed.
 - **Fully typed** — TypeScript-first with complete type definitions for all AT Protocol facet types.
 - **Tree-shakeable** — ESM + CJS dual build via `tsup`.
 
@@ -47,7 +47,6 @@ bun add react react-dom
 
 ```tsx
 import { RichTextDisplay } from 'bsky-richtext-react'
-import 'bsky-richtext-react/styles.css'
 
 // Pass raw fields from an app.bsky.feed.post record
 export function Post({ post }) {
@@ -59,7 +58,6 @@ export function Post({ post }) {
 
 ```tsx
 import { RichTextEditor } from 'bsky-richtext-react'
-import 'bsky-richtext-react/styles.css'
 
 export function Composer() {
   return (
@@ -81,84 +79,13 @@ export function Composer() {
 
 ## Styling
 
-### 1. Import the structural CSS
+The library ships **no CSS file**. All default styles are Tailwind utility classes applied through the `classNames` prop system. As long as Tailwind is configured in your project, components look good with zero extra setup.
 
-```ts
-import 'bsky-richtext-react/styles.css'
-```
+### 1. Defaults — Tailwind utility classes
 
-This only sets `display`, `word-break`, `box-sizing`, and flex layout rules. **No colours, fonts, or borders are applied.** You control all visual styling.
+Every component has a set of default Tailwind classes applied out of the box (see `defaultEditorClassNames`, `defaultDisplayClassNames`, `defaultSuggestionClassNames`). No stylesheet import is required.
 
-### 2. Target the default class names
-
-Every element rendered by the components carries a predictable CSS class that you can target directly:
-
-#### `<RichTextDisplay>`
-
-| Class | Element |
-|-------|---------|
-| `.bsky-richtext` | Root `<span>` |
-| `.bsky-mention` | @mention `<a>` |
-| `.bsky-link` | Link `<a>` |
-| `.bsky-tag` | #hashtag `<a>` |
-
-#### `<RichTextEditor>`
-
-| Class | Element |
-|-------|---------|
-| `.bsky-editor` | Root wrapper `<div>` |
-| `.bsky-editor-content` | ProseMirror wrapper |
-| `.bsky-editor-mention` | Mention chip inside editor |
-| `.autolink` | URL decoration span inside editor |
-
-#### `<MentionSuggestionList>` (dropdown)
-
-| Class | Element |
-|-------|---------|
-| `.bsky-suggestions` | Outer container |
-| `.bsky-suggestion-item` | Each suggestion row (`<button>`) |
-| `.bsky-suggestion-item-selected` | Currently highlighted row |
-| `.bsky-suggestion-avatar` | Avatar wrapper |
-| `.bsky-suggestion-avatar-img` | `<img>` element |
-| `.bsky-suggestion-avatar-placeholder` | Initial-letter fallback |
-| `.bsky-suggestion-text` | Text column (name + handle) |
-| `.bsky-suggestion-name` | Display name |
-| `.bsky-suggestion-handle` | `@handle` |
-| `.bsky-suggestion-empty` | "No results" message |
-
-```css
-/* Example: style the editor */
-.bsky-editor .ProseMirror {
-  padding: 12px 16px;
-  border: 1px solid #e1e4e8;
-  border-radius: 8px;
-  font-size: 16px;
-  line-height: 1.5;
-  min-height: 120px;
-}
-
-/* Example: style mentions in a post */
-.bsky-mention {
-  color: #0085ff;
-  font-weight: 600;
-  text-decoration: none;
-}
-.bsky-mention:hover { text-decoration: underline; }
-
-/* Example: style the suggestion dropdown */
-.bsky-suggestions {
-  background: #fff;
-  border: 1px solid #e1e4e8;
-  border-radius: 8px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
-  min-width: 240px;
-  padding: 4px;
-}
-.bsky-suggestion-item { padding: 8px 10px; border-radius: 6px; }
-.bsky-suggestion-item-selected { background: #f0f4ff; }
-```
-
-### 3. Use `generateClassNames()` for targeted overrides
+### 2. Use `generateClassNames()` for targeted overrides
 
 The `classNames` prop on each component accepts a nested object. Use `generateClassNames()` to cleanly layer your classes on top of the defaults without rewriting them from scratch:
 
@@ -205,7 +132,9 @@ Pass a plain object to skip the defaults entirely:
 <RichTextDisplay classNames={{ root: 'my-text', mention: 'my-mention' }} />
 ```
 
-### 4. Tailwind integration
+### 3. Using `tailwind-merge` to deduplicate classes
+
+When layering your own Tailwind classes on top of the defaults, use `tailwind-merge` as the `cn` argument to avoid conflicting class duplication:
 
 ```tsx
 import { twMerge } from 'tailwind-merge'

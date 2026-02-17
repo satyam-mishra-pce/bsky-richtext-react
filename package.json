@@ -1,6 +1,6 @@
 {
   "name": "bsky-richtext-react",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "description": "React components for rendering and editing Bluesky richtext content (app.bsky.richtext lexicon)",
   "author": "satyam-mishra-pce",
   "license": "MIT",
@@ -40,17 +40,14 @@
         "types": "./dist/index.d.cts",
         "default": "./dist/index.cjs"
       }
-    },
-    "./styles.css": "./dist/styles.css"
+    }
   },
   "files": [
     "dist",
     "README.md",
     "CHANGELOG.md"
   ],
-  "sideEffects": [
-    "*.css"
-  ],
+  "sideEffects": false,
   "scripts": {
     "dev": "storybook dev -p 6006",
     "build": "tsup",
@@ -157,6 +154,7 @@
     "eslint-plugin-react-hooks": "^5.1.0",
     "globals": "^15.14.0",
     "jsdom": "^26.0.0",
+    "tailwindcss": "^3.4.0",
     "prettier": "^3.4.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",

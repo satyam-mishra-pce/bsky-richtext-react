@@ -1,7 +1,8 @@
 import type { Preview } from '@storybook/react'
 
-// Import structural CSS so stories reflect the real layout
-import '../src/styles.css'
+// Tailwind CSS — provides the utility classes used by the default classNames.
+// This is a dev-only import; the published package ships no CSS.
+import './tailwind.css'
 
 const preview: Preview = {
   parameters: {

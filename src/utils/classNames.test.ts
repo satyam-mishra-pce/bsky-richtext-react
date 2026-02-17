@@ -15,12 +15,7 @@ describe('generateClassNames', () => {
   })
 
   it('filters out falsy entries (undefined, null, false)', () => {
-    const result = generateClassNames<DisplayClassNames>([
-      undefined,
-      null,
-      false,
-      { root: 'a' },
-    ])
+    const result = generateClassNames<DisplayClassNames>([undefined, null, false, { root: 'a' }])
     expect(result).toEqual({ root: 'a' })
   })
 
@@ -41,10 +36,7 @@ describe('generateClassNames', () => {
   // ─── String merging ────────────────────────────────────────────────────────
 
   it('joins string values with a space by default', () => {
-    const result = generateClassNames<DisplayClassNames>([
-      { root: 'a' },
-      { root: 'b' },
-    ])
+    const result = generateClassNames<DisplayClassNames>([{ root: 'a' }, { root: 'b' }])
     expect(result.root).toBe('a b')
   })
 
@@ -52,26 +44,17 @@ describe('generateClassNames', () => {
     const cn = (...args: Array<string | undefined | null | false>) =>
       args.filter(Boolean).join(' | ')
 
-    const result = generateClassNames<DisplayClassNames>(
-      [{ root: 'a' }, { root: 'b' }],
-      cn,
-    )
+    const result = generateClassNames<DisplayClassNames>([{ root: 'a' }, { root: 'b' }], cn)
     expect(result.root).toBe('a | b')
   })
 
   it('skips empty strings when merging', () => {
-    const result = generateClassNames<DisplayClassNames>([
-      { root: '' },
-      { root: 'b' },
-    ])
+    const result = generateClassNames<DisplayClassNames>([{ root: '' }, { root: 'b' }])
     expect(result.root).toBe('b')
   })
 
   it('handles keys present in only one object', () => {
-    const result = generateClassNames<DisplayClassNames>([
-      { root: 'r' },
-      { mention: 'm' },
-    ])
+    const result = generateClassNames<DisplayClassNames>([{ root: 'r' }, { mention: 'm' }])
     expect(result.root).toBe('r')
     expect(result.mention).toBe('m')
   })
@@ -81,14 +64,14 @@ describe('generateClassNames', () => {
   it('merges a single override on top of default display classNames', () => {
     const result = generateClassNames<DisplayClassNames>([
       defaultDisplayClassNames,
-      { mention: 'text-blue-500' },
+      { mention: 'font-bold' },
     ])
-    // merged: 'bsky-mention text-blue-500'
-    expect(result.mention).toBe('bsky-mention text-blue-500')
+    // default mention class + override appended
+    expect(result.mention).toBe(`${defaultDisplayClassNames.mention} font-bold`)
     // unchanged keys come through untouched
-    expect(result.root).toBe('bsky-richtext')
-    expect(result.link).toBe('bsky-link')
-    expect(result.tag).toBe('bsky-tag')
+    expect(result.root).toBe(defaultDisplayClassNames.root)
+    expect(result.link).toBe(defaultDisplayClassNames.link)
+    expect(result.tag).toBe(defaultDisplayClassNames.tag)
   })
 
   it('applies three layers: defaults → theme → local override', () => {
@@ -97,7 +80,7 @@ describe('generateClassNames', () => {
 
     const result = generateClassNames([defaultDisplayClassNames, theme, local])
     // All three merged in order
-    expect(result.root).toBe('bsky-richtext dark-mode compact')
+    expect(result.root).toBe(`${defaultDisplayClassNames.root} dark-mode compact`)
   })
 
   // ─── Conditional entries ───────────────────────────────────────────────────
@@ -112,7 +95,7 @@ describe('generateClassNames', () => {
       isCompact && { root: 'compact' },
     ])
     // isDark is false (skipped), isCompact is true
-    expect(result.root).toBe('bsky-richtext compact')
+    expect(result.root).toBe(`${defaultDisplayClassNames.root} compact`)
   })
 
   // ─── Deep nested merge (EditorClassNames.suggestion) ──────────────────────
@@ -124,14 +107,14 @@ describe('generateClassNames', () => {
     ])
 
     // Top-level keys unaffected
-    expect(result.root).toBe('bsky-editor')
+    expect(result.root).toBe(defaultEditorClassNames.root)
 
     // Nested: item should be merged
-    expect(result.suggestion?.item).toBe('bsky-suggestion-item px-3 py-2')
+    expect(result.suggestion?.item).toBe(`${defaultSuggestionClassNames.item} px-3 py-2`)
 
     // Other nested keys unchanged
-    expect(result.suggestion?.root).toBe('bsky-suggestions')
-    expect(result.suggestion?.handle).toBe('bsky-suggestion-handle')
+    expect(result.suggestion?.root).toBe(defaultSuggestionClassNames.root)
+    expect(result.suggestion?.handle).toBe(defaultSuggestionClassNames.handle)
   })
 
   it('recursively merges multiple levels of nested overrides', () => {
@@ -145,22 +128,22 @@ describe('generateClassNames', () => {
     const result = generateClassNames([defaultEditorClassNames, layer1, layer2])
 
     expect(result.suggestion?.item).toBe(
-      'bsky-suggestion-item layer1-item layer2-item',
+      `${defaultSuggestionClassNames.item} layer1-item layer2-item`,
     )
     expect(result.suggestion?.itemSelected).toBe(
-      'bsky-suggestion-item-selected selected',
+      `${defaultSuggestionClassNames.itemSelected} selected`,
     )
   })
 
   it('handles a standalone SuggestionClassNames merge', () => {
     const result = generateClassNames<SuggestionClassNames>([
       defaultSuggestionClassNames,
-      { root: 'shadow-lg', itemSelected: 'bg-blue-100' },
+      { root: 'shadow-xl', itemSelected: 'bg-blue-100' },
     ])
 
-    expect(result.root).toBe('bsky-suggestions shadow-lg')
-    expect(result.itemSelected).toBe('bsky-suggestion-item-selected bg-blue-100')
-    expect(result.item).toBe('bsky-suggestion-item')
+    expect(result.root).toBe(`${defaultSuggestionClassNames.root} shadow-xl`)
+    expect(result.itemSelected).toBe(`${defaultSuggestionClassNames.itemSelected} bg-blue-100`)
+    expect(result.item).toBe(defaultSuggestionClassNames.item)
   })
 
   // ─── Custom cn function with real tailwind-merge-like deduplication ────────
@@ -168,11 +151,7 @@ describe('generateClassNames', () => {
   it('allows a cn function that deduplicates conflicting classes', () => {
     // Simple deduplicator: last class wins for conflicting prefixes
     const twMerge = (...args: Array<string | undefined | null | false>) => {
-      const classes = args
-        .filter(Boolean)
-        .join(' ')
-        .split(' ')
-        .filter(Boolean)
+      const classes = args.filter(Boolean).join(' ').split(' ').filter(Boolean)
       // Deduplicate by keeping last occurrence
       const seen = new Map<string, string>()
       for (const cls of classes) {
@@ -202,10 +181,7 @@ describe('generateClassNames', () => {
   })
 
   it('handles a fully empty override object gracefully', () => {
-    const result = generateClassNames<DisplayClassNames>([
-      defaultDisplayClassNames,
-      {},
-    ])
+    const result = generateClassNames<DisplayClassNames>([defaultDisplayClassNames, {}])
     expect(result).toEqual(defaultDisplayClassNames)
   })
 })

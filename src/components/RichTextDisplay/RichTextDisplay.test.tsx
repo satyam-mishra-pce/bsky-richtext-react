@@ -5,10 +5,7 @@ import type { RichTextRecord } from '../../types/facets'
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
-function buildRecord(
-  text: string,
-  facets: RichTextRecord['facets'],
-): RichTextRecord {
+function buildRecord(text: string, facets: RichTextRecord['facets']): RichTextRecord {
   return { text, facets }
 }
 
@@ -142,22 +139,17 @@ describe('RichTextDisplay', () => {
   })
 
   it('forwards extra props to the root span', () => {
-    render(
-      <RichTextDisplay
-        value="test"
-        data-testid="richtext-root"
-        className="my-class"
-      />,
-    )
+    render(<RichTextDisplay value="test" data-testid="richtext-root" className="my-class" />)
 
     const root = screen.getByTestId('richtext-root')
     expect(root).toHaveClass('my-class')
     expect(root.tagName).toBe('SPAN')
   })
 
-  it('has default bsky-richtext class on root', () => {
+  it('has default Tailwind classes on root', () => {
     render(<RichTextDisplay value="test" data-testid="root" />)
     const root = screen.getByTestId('root')
-    expect(root).toHaveClass('bsky-richtext')
+    expect(root).toHaveClass('inline')
+    expect(root).toHaveClass('break-words')
   })
 })

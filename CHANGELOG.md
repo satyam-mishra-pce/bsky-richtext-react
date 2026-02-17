@@ -7,6 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.1.0] — 2026-02-17
+
+### Changed
+
+- **Default classNames now use Tailwind CSS utility classes** instead of the previous BEM-style class names (`bsky-editor`, `bsky-richtext`, etc.). All components have sensible out-of-the-box appearance as long as Tailwind is configured in the consumer's project — no extra setup needed.
+  - `defaultDisplayClassNames` — mentions, links, and tags are styled `text-blue-500 hover:underline`.
+  - `defaultEditorClassNames` — editor root is `block w-full relative`; mention chips and autolinks are `inline text-blue-500`.
+  - `defaultSuggestionClassNames` — dropdown has full visual defaults: `bg-white rounded-lg shadow-lg border`, hover states, avatar layout, truncated text columns.
+- **`styles.css` removed from the published package.** The `bsky-richtext-react/styles.css` sub-export and the `./dist/styles.css` artefact no longer exist. Remove any `import 'bsky-richtext-react/styles.css'` from your app.
+- **`sideEffects` set to `false`** — the package no longer has CSS side effects, enabling full tree-shaking.
+- **Tailwind added as a `devDependency`** — used exclusively in Storybook for development/testing. Not bundled in or required by consumers.
+- The `classNames` prop API and `generateClassNames()` are unchanged — all existing override patterns continue to work.
+
+### Migration
+
+```diff
+- import 'bsky-richtext-react/styles.css'
+  import { RichTextEditor } from 'bsky-richtext-react'
+```
+
+If you were targeting the old BEM class names in your own CSS, replace them with the `classNames` prop or `generateClassNames()` to apply your own classes directly.
+
+---
+
 ## [1.0.2] — 2026-02-17
 
 ### Fixed
