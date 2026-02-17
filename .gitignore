@@ -1,0 +1,70 @@
+# ─── Local Development ──────────────────────────────────────────────────────
+# Keep all local-only files out of git
+.local/
+
+# ─── Dependencies ───────────────────────────────────────────────────────────
+node_modules/
+.pnp
+.pnp.js
+
+# ─── Build Output ───────────────────────────────────────────────────────────
+dist/
+build/
+storybook-static/
+
+# ─── Test & Coverage ────────────────────────────────────────────────────────
+coverage/
+.nyc_output/
+
+# ─── Environment & Secrets ──────────────────────────────────────────────────
+.env
+.env.local
+.env.*.local
+*.pem
+
+# ─── Logs ───────────────────────────────────────────────────────────────────
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+bun-error.log*
+lerna-debug.log*
+
+# ─── Caches ─────────────────────────────────────────────────────────────────
+.cache/
+.eslintcache
+.stylelintcache
+.prettiercache
+*.tsbuildinfo
+
+# ─── OS & Editor ────────────────────────────────────────────────────────────
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# JetBrains IDEs
+.idea/
+*.iml
+*.iws
+
+# VSCode
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+
+# ─── Temporary files ────────────────────────────────────────────────────────
+*.swp
+*.swo
+*~
+
+# ─── Optional lock files (keep bun.lock, ignore others) ─────────────────────
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+# bun.lock  # <-- committed so contributors get exact versions

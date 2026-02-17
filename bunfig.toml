@@ -1,0 +1,14 @@
+# Bun configuration
+# https://bun.sh/docs/runtime/bunfig
+
+[install]
+# Exact versions to avoid lockfile drift
+exact = false
+
+[install.cache]
+# Disable symlinks for compatibility
+dir = "~/.bun/install/cache"
+
+[test]
+# Use vitest instead of bun test for better ecosystem compatibility
+# Run tests with: bun run test (invokes vitest via package.json script)

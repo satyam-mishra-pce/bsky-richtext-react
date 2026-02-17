@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    // Include test and story files for dev/IDE
+    "noUnusedLocals": false,
+    "noUnusedParameters": false
+  },
+  "include": ["src", "vitest.setup.ts"],
+  "exclude": ["node_modules", "dist"]
+}

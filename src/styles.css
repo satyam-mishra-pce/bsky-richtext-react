@@ -1,0 +1,71 @@
+/**
+ * bsky-richtext-react — Structural CSS
+ *
+ * Import this file in your app for essential layout styles.
+ * These rules define structure and positioning only — no colors,
+ * fonts, or visual decoration. Override freely.
+ *
+ * Usage:
+ *   import 'bsky-richtext-react/styles.css'
+ */
+
+/* ─── RichTextDisplay ────────────────────────────────────────────────────── */
+
+[data-bsky-richtext] {
+  /* Inline-block so the span respects its parent's flow but wraps correctly */
+  display: inline;
+  /* Allow long URLs and handles to break naturally */
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
+/* Facet wrapper spans — no block-level layout shift */
+[data-bsky-richtext] [data-bsky-mention],
+[data-bsky-richtext] [data-bsky-link],
+[data-bsky-richtext] [data-bsky-tag] {
+  display: inline;
+}
+
+/* ─── RichTextEditor ─────────────────────────────────────────────────────── */
+
+[data-bsky-richtext-editor] {
+  /* Fill available width */
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* The ProseMirror editable region — layout only */
+[data-bsky-richtext-editor] .ProseMirror {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  /* Remove the browser's default focus outline — consumers add their own */
+  outline: none;
+  /* Ensure the editor is at least one line tall even when empty */
+  min-height: 1em;
+}
+
+/* Paragraphs inside the editor — margin reset so spacing is consumer-controlled */
+[data-bsky-richtext-editor] .ProseMirror p {
+  margin: 0;
+}
+
+/* Placeholder — positioned relative to the editor line */
+[data-bsky-richtext-editor] .ProseMirror p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  /* Float above the content, not in the flow */
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
+
+/* Mention nodes inside editor */
+[data-bsky-richtext-editor] .bsky-mention {
+  display: inline;
+}
+
+/* Link decorations inside editor */
+[data-bsky-richtext-editor] .bsky-link {
+  display: inline;
+}
