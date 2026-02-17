@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.0.2] — 2026-02-17
+
+### Fixed
+
+- **`localsInner` crash in Next.js / SSR apps (root-cause fix)** — the real source of the `Cannot read properties of undefined (reading 'localsInner')` crash is a **ProseMirror module-duplication** problem, not an SSR-timing issue. When `@tiptap/*` and `prosemirror-*` packages were bundled inside the library output, a consumer's app could end up with two separate copies of `prosemirror-view` in the same page. ProseMirror's `DecorationGroup` instances from different copies are incompatible, causing the crash. The fix is to mark all `@tiptap/*`, `prosemirror-*`, `tippy.js`, and `@atproto/api` imports as **external** in the build config so the consumer's bundler resolves them to a single, deduplicated copy. As a result, the ESM bundle size dropped from ~190 KB to ~25 KB. ([ueberdosis/tiptap#3869](https://github.com/ueberdosis/tiptap/issues/3869), [#5074](https://github.com/ueberdosis/tiptap/issues/5074))
+- All externalized packages are also now listed under `peerDependencies` so package managers can detect and warn on version mismatches.
+
+---
+
 ## [1.0.1] — 2026-02-17
 
 ### Fixed

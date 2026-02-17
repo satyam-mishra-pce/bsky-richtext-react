@@ -1,6 +1,6 @@
 {
   "name": "bsky-richtext-react",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "React components for rendering and editing Bluesky richtext content (app.bsky.richtext lexicon)",
   "author": "satyam-mishra-pce",
   "license": "MIT",
@@ -70,10 +70,54 @@
   },
   "peerDependencies": {
     "react": "^18.0.0 || ^19.0.0",
-    "react-dom": "^18.0.0 || ^19.0.0"
+    "react-dom": "^18.0.0 || ^19.0.0",
+    "@atproto/api": "^0.13.16",
+    "@tiptap/core": "^2.11.5",
+    "@tiptap/extension-document": "^2.11.5",
+    "@tiptap/extension-hard-break": "^2.11.5",
+    "@tiptap/extension-history": "^2.11.5",
+    "@tiptap/extension-mention": "^2.11.5",
+    "@tiptap/extension-paragraph": "^2.11.5",
+    "@tiptap/extension-placeholder": "^2.11.5",
+    "@tiptap/extension-text": "^2.11.5",
+    "@tiptap/react": "^2.11.5",
+    "tippy.js": "^6.3.7"
   },
   "peerDependenciesMeta": {
     "react-dom": {
+      "optional": false
+    },
+    "@atproto/api": {
+      "optional": false
+    },
+    "@tiptap/core": {
+      "optional": false
+    },
+    "@tiptap/extension-document": {
+      "optional": false
+    },
+    "@tiptap/extension-hard-break": {
+      "optional": false
+    },
+    "@tiptap/extension-history": {
+      "optional": false
+    },
+    "@tiptap/extension-mention": {
+      "optional": false
+    },
+    "@tiptap/extension-paragraph": {
+      "optional": false
+    },
+    "@tiptap/extension-placeholder": {
+      "optional": false
+    },
+    "@tiptap/extension-text": {
+      "optional": false
+    },
+    "@tiptap/react": {
+      "optional": false
+    },
+    "tippy.js": {
       "optional": false
     }
   },
