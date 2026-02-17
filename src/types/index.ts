@@ -10,3 +10,9 @@ export type {
 } from './facets'
 
 export { isMentionFeature, isLinkFeature, isTagFeature } from './facets'
+
+export type {
+  DisplayClassNames,
+  EditorClassNames,
+  SuggestionClassNames,
+} from './classNames'

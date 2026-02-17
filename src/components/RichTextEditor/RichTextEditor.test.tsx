@@ -8,10 +8,10 @@ describe('RichTextEditor', () => {
     expect(screen.getByTestId('editor-root')).toBeInTheDocument()
   })
 
-  it('has data-bsky-richtext-editor attribute on root', () => {
+  it('has default bsky-editor class on root', () => {
     render(<RichTextEditor data-testid="editor-root" />)
     const root = screen.getByTestId('editor-root')
-    expect(root).toHaveAttribute('data-bsky-richtext-editor')
+    expect(root).toHaveClass('bsky-editor')
   })
 
   it('renders with initial plain string value', () => {

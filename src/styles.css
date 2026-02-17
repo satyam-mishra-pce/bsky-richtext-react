@@ -8,13 +8,41 @@
  * Usage:
  *   import 'bsky-richtext-react/styles.css'
  *
+ * Class names reference (matching the default classNames objects):
+ *
+ *   RichTextDisplay:
+ *     .bsky-richtext              — root <span>
+ *     .bsky-mention               — @mention anchor
+ *     .bsky-link                  — link anchor
+ *     .bsky-tag                   — #hashtag anchor
+ *
+ *   RichTextEditor:
+ *     .bsky-editor                — root wrapper <div>
+ *     .bsky-editor-content        — ProseMirror editable area wrapper
+ *     .bsky-editor-mention        — mention chip inside the editor
+ *     .autolink                   — URL decoration span inside the editor
+ *
+ *   MentionSuggestionList (dropdown):
+ *     .bsky-suggestions           — outer container
+ *     .bsky-suggestion-item       — each suggestion row (<button>)
+ *     .bsky-suggestion-item-selected — currently highlighted row
+ *     .bsky-suggestion-avatar     — avatar wrapper
+ *     .bsky-suggestion-avatar-img — <img> element
+ *     .bsky-suggestion-avatar-placeholder — initial-letter fallback
+ *     .bsky-suggestion-text       — text column (name + handle)
+ *     .bsky-suggestion-name       — display name
+ *     .bsky-suggestion-handle     — @handle
+ *     .bsky-suggestion-empty      — "No results" message
+ *
  * Visual styling guide:
- *   See README.md for example selectors to style each part of the components.
+ *   All class names above can be targeted directly in your CSS.
+ *   Use generateClassNames() to append your own classes without
+ *   removing the structural defaults.
  */
 
 /* ─── RichTextDisplay ────────────────────────────────────────────────────── */
 
-[data-bsky-richtext] {
+.bsky-richtext {
   /* Inline so the span respects the parent's flow and wraps naturally */
   display: inline;
   /* Allow long URLs and handles to break at word boundaries */
@@ -22,16 +50,16 @@
   overflow-wrap: break-word;
 }
 
-/* Facet wrapper spans — stay inline, no block-level layout shift */
-[data-bsky-richtext] [data-bsky-mention],
-[data-bsky-richtext] [data-bsky-link],
-[data-bsky-richtext] [data-bsky-tag] {
+/* Facet anchors — stay inline, no block-level layout shift */
+.bsky-mention,
+.bsky-link,
+.bsky-tag {
   display: inline;
 }
 
 /* ─── RichTextEditor ─────────────────────────────────────────────────────── */
 
-[data-bsky-richtext-editor] {
+.bsky-editor {
   /* Fill available width */
   display: block;
   width: 100%;
@@ -40,8 +68,16 @@
   position: relative;
 }
 
-/* The ProseMirror editable region */
-[data-bsky-richtext-editor] .ProseMirror {
+/* The ProseMirror editable region wrapper */
+.bsky-editor-content {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* The ProseMirror editable region itself */
+.bsky-editor .ProseMirror,
+.bsky-editor-content .ProseMirror {
   display: block;
   width: 100%;
   box-sizing: border-box;
@@ -52,12 +88,14 @@
 }
 
 /* Paragraphs — reset margin so consumers control spacing */
-[data-bsky-richtext-editor] .ProseMirror p {
+.bsky-editor .ProseMirror p,
+.bsky-editor-content .ProseMirror p {
   margin: 0;
 }
 
 /* Placeholder — floated so it doesn't push content down */
-[data-bsky-richtext-editor] .ProseMirror p.is-editor-empty:first-child::before {
+.bsky-editor .ProseMirror p.is-editor-empty:first-child::before,
+.bsky-editor-content .ProseMirror p.is-editor-empty:first-child::before {
   content: attr(data-placeholder);
   float: left;
   height: 0;
@@ -65,34 +103,18 @@
 }
 
 /* Mention chips inside the editor */
-[data-bsky-richtext-editor] .bsky-mention {
+.bsky-editor-mention {
   display: inline;
 }
 
 /* URL decorations inside the editor */
-[data-bsky-richtext-editor] .bsky-link {
+.autolink {
   display: inline;
 }
 
 /* ─── Mention Suggestion Dropdown ───────────────────────────────────────── */
-/*
- * Structural styles for the default MentionSuggestionList component.
- * This handles layout only — no colors, borders, or fonts.
- * Add your own visual styles using these selectors:
- *
- *   [data-bsky-mention-suggestions]            — outer container
- *   [data-bsky-mention-suggestion-item]        — each suggestion row (a <button>)
- *   [data-bsky-mention-suggestion-item][data-selected] — highlighted row
- *   [data-bsky-mention-avatar]                 — avatar wrapper
- *   [data-bsky-mention-avatar-img]             — <img> element
- *   [data-bsky-mention-avatar-placeholder]     — initial-letter fallback circle
- *   [data-bsky-mention-suggestion-text]        — text column (name + handle)
- *   [data-bsky-mention-suggestion-name]        — display name
- *   [data-bsky-mention-suggestion-handle]      — @handle
- *   [data-bsky-mention-suggestion-empty]       — "No results" message
- */
 
-[data-bsky-mention-suggestions] {
+.bsky-suggestions {
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
@@ -101,7 +123,7 @@
   overflow-y: auto;
 }
 
-[data-bsky-mention-suggestion-item] {
+.bsky-suggestion-item {
   /* Full-width button row */
   display: flex;
   flex-direction: row;
@@ -119,7 +141,7 @@
   user-select: none;
 }
 
-[data-bsky-mention-suggestion-text] {
+.bsky-suggestion-text {
   display: flex;
   flex-direction: column;
   flex: 1;
@@ -127,8 +149,8 @@
   overflow: hidden;
 }
 
-[data-bsky-mention-suggestion-name],
-[data-bsky-mention-suggestion-handle] {
+.bsky-suggestion-name,
+.bsky-suggestion-handle {
   display: block;
   overflow: hidden;
   white-space: nowrap;
@@ -136,21 +158,21 @@
 }
 
 /* Avatar wrapper — fixed square, circular clip via consumer CSS */
-[data-bsky-mention-avatar] {
+.bsky-suggestion-avatar {
   display: flex;
   flex-shrink: 0;
   align-items: center;
   justify-content: center;
 }
 
-[data-bsky-mention-avatar-img] {
+.bsky-suggestion-avatar-img {
   display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-[data-bsky-mention-avatar-placeholder] {
+.bsky-suggestion-avatar-placeholder {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -158,7 +180,7 @@
   height: 100%;
 }
 
-[data-bsky-mention-suggestion-empty] {
+.bsky-suggestion-empty {
   display: block;
   box-sizing: border-box;
 }

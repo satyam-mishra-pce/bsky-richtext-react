@@ -17,6 +17,7 @@ import type { Instance as TippyInstance } from 'tippy.js'
 import tippy from 'tippy.js'
 import { ReactRenderer } from '@tiptap/react'
 import type { SuggestionOptions, SuggestionProps } from '@tiptap/suggestion'
+import type { SuggestionClassNames } from '../../types/classNames'
 import {
   MentionSuggestionList,
   type MentionSuggestionListRef,
@@ -41,9 +42,10 @@ export interface DefaultSuggestionRendererOptions {
   noResultsText?: string
 
   /**
-   * Extra CSS class applied to the suggestion list container.
+   * CSS class names for each styleable part of the suggestion dropdown.
+   * Forwarded directly to `MentionSuggestionList`.
    */
-  className?: string
+  classNames?: Partial<SuggestionClassNames>
 }
 
 // ─── Factory ─────────────────────────────────────────────────────────────────
@@ -74,15 +76,19 @@ export function createDefaultSuggestionRenderer(
       popup = undefined
     }
 
+    const buildProps = (
+      props: SuggestionProps<MentionSuggestion>,
+    ): MentionSuggestionListProps => ({
+      ...props,
+      showAvatars: options.showAvatars ?? true,
+      noResultsText: options.noResultsText ?? 'No results',
+      ...(options.classNames !== undefined ? { classNames: options.classNames } : {}),
+    })
+
     return {
       onStart(props: SuggestionProps<MentionSuggestion>) {
         renderer = new ReactRenderer(MentionSuggestionList, {
-          props: {
-            ...props,
-            showAvatars: options.showAvatars ?? true,
-            noResultsText: options.noResultsText ?? 'No results',
-            className: options.className,
-          } as MentionSuggestionListProps,
+          props: buildProps(props),
           editor: props.editor,
         })
 
@@ -111,12 +117,7 @@ export function createDefaultSuggestionRenderer(
       },
 
       onUpdate(props: SuggestionProps<MentionSuggestion>) {
-        renderer?.updateProps({
-          ...props,
-          showAvatars: options.showAvatars ?? true,
-          noResultsText: options.noResultsText ?? 'No results',
-          className: options.className,
-        } as MentionSuggestionListProps)
+        renderer?.updateProps(buildProps(props))
 
         if (!props.clientRect) return
 

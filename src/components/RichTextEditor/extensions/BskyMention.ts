@@ -38,6 +38,12 @@ export interface BskyMentionOptions {
    * is provided).
    */
   defaultRendererOptions?: DefaultSuggestionRendererOptions
+
+  /**
+   * CSS class applied to mention chips rendered inside the editor.
+   * Sourced from `EditorClassNames.mention` and defaults to `bsky-editor-mention`.
+   */
+  mentionClass?: string
 }
 
 // ─── Extension factory ───────────────────────────────────────────────────────
@@ -53,6 +59,7 @@ export function createBskyMentionExtension({
   onMentionQuery,
   renderSuggestionList,
   defaultRendererOptions,
+  mentionClass = 'bsky-editor-mention',
 }: BskyMentionOptions) {
   // Use the consumer-supplied renderer, or fall back to our built-in one.
   const render =
@@ -60,8 +67,7 @@ export function createBskyMentionExtension({
 
   return Mention.configure({
     HTMLAttributes: {
-      class: 'bsky-mention',
-      'data-bsky-mention': '',
+      class: mentionClass,
     },
 
     /**

@@ -28,6 +28,10 @@ import { Placeholder } from '@tiptap/extension-placeholder'
 import type { SuggestionOptions } from '@tiptap/suggestion'
 import { RichText as AtpRichText } from '@atproto/api'
 import type { RichTextRecord, Facet } from '../../types/facets'
+import type { EditorClassNames } from '../../types/classNames'
+import { defaultEditorClassNames } from '../../defaults/classNames'
+import { generateClassNames } from '../../utils/classNames'
+import { createDebouncedSearch } from '../../utils/blueskyApi'
 import { createBskyMentionExtension } from './extensions/BskyMention'
 import { BskyLinkDecorator } from './extensions/BskyLinkDecorator'
 import type { DefaultSuggestionRendererOptions } from './createSuggestionRenderer'
@@ -101,6 +105,10 @@ export interface RichTextEditorProps
    * Called with the query string (text after "@") as the user types.
    * Return an empty array to show no suggestions / "No results".
    *
+   * When not provided, the built-in Bluesky public API search is used
+   * (debounced by `mentionSearchDebounceMs`). Set `disableDefaultMentionSearch`
+   * to true to disable this default behaviour entirely.
+   *
    * @example
    * ```tsx
    * onMentionQuery={async (q) => {
@@ -117,6 +125,20 @@ export interface RichTextEditorProps
   onMentionQuery?: (query: string) => Promise<MentionSuggestion[]>
 
   /**
+   * Debounce delay (in milliseconds) applied to the built-in Bluesky mention
+   * search. Has no effect when `onMentionQuery` is provided.
+   * @default 300
+   */
+  mentionSearchDebounceMs?: number
+
+  /**
+   * When true, disables the default Bluesky public API mention search.
+   * No suggestions will appear unless you provide `onMentionQuery`.
+   * @default false
+   */
+  disableDefaultMentionSearch?: boolean
+
+  /**
    * Custom TipTap `suggestion.render` factory.
    * When provided, replaces the default tippy.js + MentionSuggestionList renderer.
    * The factory must return `{ onStart, onUpdate, onKeyDown, onExit }`.
@@ -130,6 +152,29 @@ export interface RichTextEditorProps
    * Only used when `renderMentionSuggestion` is NOT provided.
    */
   mentionSuggestionOptions?: DefaultSuggestionRendererOptions
+
+  /**
+   * CSS class names for each styleable part of the editor.
+   *
+   * Use `generateClassNames()` to cleanly merge with the built-in defaults:
+   * @example
+   * ```tsx
+   * import { generateClassNames, defaultEditorClassNames } from 'bsky-richtext-react'
+   *
+   * <RichTextEditor
+   *   classNames={generateClassNames([
+   *     defaultEditorClassNames,
+   *     { root: 'border rounded-lg p-3', mention: 'text-blue-500' },
+   *   ], cn)}
+   * />
+   * ```
+   *
+   * Or pass a completely custom object to opt out of the defaults:
+   * ```tsx
+   * <RichTextEditor classNames={{ root: 'my-editor', mention: 'my-mention' }} />
+   * ```
+   */
+  classNames?: Partial<EditorClassNames>
 
   /**
    * Imperative ref for programmatic control.
@@ -252,7 +297,8 @@ function editorJsonToText(
  * `RichTextEditor` is a TipTap-based editor for composing AT Protocol richtext.
  *
  * Features:
- * - Real-time @mention autocomplete with a default tippy.js popup
+ * - Real-time @mention autocomplete — defaults to the Bluesky public API,
+ *   override with `onMentionQuery`
  * - Automatic URL decoration (link facets detected on change)
  * - Hard-break (Shift+Enter) for newlines inside a paragraph
  * - Undo/redo history
@@ -260,12 +306,32 @@ function editorJsonToText(
  *   `detectFacetsWithoutResolution()`
  * - Headless — bring your own CSS, or use the structural defaults in styles.css
  *
- * @example
+ * @example Basic usage (built-in Bluesky mention search)
+ * ```tsx
+ * <RichTextEditor
+ *   placeholder="What's on your mind?"
+ *   onChange={(record) => setPost(record)}
+ * />
+ * ```
+ *
+ * @example Custom mention search
  * ```tsx
  * <RichTextEditor
  *   placeholder="What's on your mind?"
  *   onMentionQuery={async (q) => searchProfiles(q)}
  *   onChange={(record) => setPost(record)}
+ * />
+ * ```
+ *
+ * @example With classNames
+ * ```tsx
+ * import { generateClassNames, defaultEditorClassNames } from 'bsky-richtext-react'
+ *
+ * <RichTextEditor
+ *   classNames={generateClassNames([
+ *     defaultEditorClassNames,
+ *     { root: 'border rounded-lg p-3' },
+ *   ], cn)}
  * />
  * ```
  */
@@ -276,17 +342,51 @@ export function RichTextEditor({
   onFocus,
   onBlur,
   onMentionQuery,
+  mentionSearchDebounceMs = 300,
+  disableDefaultMentionSearch = false,
   renderMentionSuggestion,
   mentionSuggestionOptions,
+  classNames: classNamesProp,
   editorRef,
   editable = true,
   ...divProps
 }: RichTextEditorProps) {
-  // Default no-op so the mention extension always has a valid query function
-  const mentionQuery = useMemo<(q: string) => Promise<MentionSuggestion[]>>(
-    () => onMentionQuery ?? (() => Promise.resolve([])),
-    [onMentionQuery],
+  // Merge provided classNames with defaults.
+  // Memoized so that inline object literals passed as `classNames` prop don't
+  // produce a new object on every render — which would otherwise cascade into
+  // extensions and useEditor recreating infinitely.
+  const cn = useMemo(
+    () => generateClassNames([defaultEditorClassNames, classNamesProp]),
+    // We compare the *serialised* form of classNamesProp so that structurally
+    // identical objects (common with inline literals) are treated as equal.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [JSON.stringify(classNamesProp)],
   )
+
+  // Create a stable debounced search function that recreates when delay changes
+  const debouncedSearch = useMemo(
+    () => createDebouncedSearch(mentionSearchDebounceMs),
+    [mentionSearchDebounceMs],
+  )
+
+  // Resolve the mention query function:
+  // 1. Consumer-provided  → use as-is
+  // 2. Default search disabled → return empty
+  // 3. Otherwise → use debounced Bluesky public API search
+  const mentionQuery = useMemo<(q: string) => Promise<MentionSuggestion[]>>(() => {
+    if (onMentionQuery) return onMentionQuery
+    if (disableDefaultMentionSearch) return () => Promise.resolve([])
+    return debouncedSearch
+  }, [onMentionQuery, disableDefaultMentionSearch, debouncedSearch])
+
+  // Stable values extracted from the memoized cn object.
+  // Primitives (strings) are compared by value in useMemo deps, so they won't
+  // cause spurious extension re-creations even if the cn object reference changes.
+  const linkClass = cn.link ?? 'autolink'
+  const mentionClass = cn.mention
+  const suggestionClassNames = cn.suggestion
+  // Serialise the nested suggestion object so it can be used as a stable dep.
+  const suggestionClassNamesKey = JSON.stringify(suggestionClassNames)
 
   const extensions = useMemo(
     () => [
@@ -295,20 +395,32 @@ export function RichTextEditor({
       Text,
       History,
       HardBreak,
-      BskyLinkDecorator,
+      // Configure link decorator with the resolved link class
+      BskyLinkDecorator.configure({ linkClass }),
       Placeholder.configure({ placeholder: placeholder ?? '' }),
       createBskyMentionExtension({
         onMentionQuery: mentionQuery,
+        ...(mentionClass !== undefined ? { mentionClass } : {}),
         // Only include optional fields when defined (exactOptionalPropertyTypes)
         ...(renderMentionSuggestion !== undefined
           ? { renderSuggestionList: renderMentionSuggestion }
           : {}),
-        ...(mentionSuggestionOptions !== undefined
-          ? { defaultRendererOptions: mentionSuggestionOptions }
+        // Merge suggestion classNames into the default renderer options
+        ...(mentionSuggestionOptions !== undefined || suggestionClassNames !== undefined
+          ? {
+              defaultRendererOptions: {
+                ...(mentionSuggestionOptions ?? {}),
+                ...(suggestionClassNames !== undefined
+                  ? { classNames: suggestionClassNames }
+                  : {}),
+              },
+            }
           : {}),
       }),
     ],
-    [mentionQuery, placeholder, renderMentionSuggestion, mentionSuggestionOptions],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [mentionQuery, placeholder, renderMentionSuggestion, mentionSuggestionOptions,
+     linkClass, mentionClass, suggestionClassNamesKey],
   )
 
   const editor = useEditor(
@@ -417,8 +529,8 @@ export function RichTextEditor({
   )
 
   return (
-    <div data-bsky-richtext-editor {...divProps}>
-      <EditorContent editor={editor} />
+    <div className={cn.root} {...divProps}>
+      <EditorContent editor={editor} className={cn.content} />
     </div>
   )
 }

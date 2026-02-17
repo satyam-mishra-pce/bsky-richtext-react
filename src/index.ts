@@ -54,6 +54,54 @@ export { useRichText } from './hooks'
 
 export { parseRichText, toShortUrl, isValidUrl } from './utils'
 
+/**
+ * Deep-merge multiple classNames objects into one.
+ * Pass an optional `cn` utility (e.g. `clsx`, `tailwind-merge`) to control
+ * how duplicate string values are combined.
+ *
+ * @example
+ * ```ts
+ * import { generateClassNames, defaultEditorClassNames } from 'bsky-richtext-react'
+ *
+ * classNames={generateClassNames([
+ *   defaultEditorClassNames,
+ *   { root: 'border rounded-lg', mention: 'text-blue-500' },
+ * ], cn)}
+ * ```
+ */
+export { generateClassNames } from './utils'
+export type { ClassNameFn } from './utils'
+
+/**
+ * Search Bluesky actors via the public unauthenticated API.
+ * This is used as the default mention search in `RichTextEditor`.
+ * Import it if you need to call it directly or build a custom debounced wrapper.
+ */
+export { searchBskyActors, createDebouncedSearch } from './utils'
+
+// ─── Default ClassNames ───────────────────────────────────────────────────────
+
+/**
+ * Default classNames objects for each component.
+ * Pass these as the first element in `generateClassNames([...])` to start
+ * from the built-in structural class names and layer your own on top.
+ *
+ * @example
+ * ```ts
+ * import { generateClassNames, defaultEditorClassNames } from 'bsky-richtext-react'
+ *
+ * const myClassNames = generateClassNames([
+ *   defaultEditorClassNames,
+ *   { root: 'my-editor' },
+ * ])
+ * ```
+ */
+export {
+  defaultDisplayClassNames,
+  defaultEditorClassNames,
+  defaultSuggestionClassNames,
+} from './defaults'
+
 // ─── Types ───────────────────────────────────────────────────────────────────
 
 export type {
@@ -68,3 +116,9 @@ export type {
 } from './types'
 
 export { isMentionFeature, isLinkFeature, isTagFeature } from './types'
+
+export type {
+  DisplayClassNames,
+  EditorClassNames,
+  SuggestionClassNames,
+} from './types'

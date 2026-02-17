@@ -1,0 +1,61 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+# Cancel any in-progress run for the same branch/PR when a new push arrives
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ci:
+    name: Typecheck · Lint · Test · Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      # Cache node_modules keyed on bun.lock so installs are fast on repeat runs
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.bun/install/cache
+          key: ${{ runner.os }}-bun-${{ hashFiles('bun.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-bun-
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Typecheck
+        run: bun run typecheck
+
+      - name: Lint
+        run: bun run lint
+
+      - name: Test
+        run: bun run test:run
+
+      - name: Build
+        run: bun run build
+
+      # Verify the built artefacts actually exist
+      - name: Verify build output
+        run: |
+          test -f dist/index.js   || (echo "ESM output missing"  && exit 1)
+          test -f dist/index.cjs  || (echo "CJS output missing"  && exit 1)
+          test -f dist/index.d.ts || (echo "Types output missing" && exit 1)
+          test -f dist/styles.css || (echo "CSS output missing"   && exit 1)
+          echo "All build artefacts present ✓"

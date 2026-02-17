@@ -5,8 +5,8 @@
  * Heavily inspired by Bluesky's social-app Autocomplete.tsx.
  *
  * This is a structural-only component — it ships with layout CSS only.
- * Consumers style it via the data attribute selectors in styles.css,
- * or replace it entirely by passing `renderMentionSuggestion` to the editor.
+ * Consumers style it via the class selectors in styles.css, or override
+ * specific parts using the `classNames` prop with `generateClassNames()`.
  *
  * TipTap requires the `render` factory to return lifecycle callbacks
  * ({ onStart, onUpdate, onKeyDown, onExit }). The component itself is mounted
@@ -17,9 +17,13 @@ import {
   forwardRef,
   useEffect,
   useImperativeHandle,
+  useMemo,
   useState,
 } from 'react'
 import type { SuggestionKeyDownProps, SuggestionProps } from '@tiptap/suggestion'
+import type { SuggestionClassNames } from '../../types/classNames'
+import { defaultSuggestionClassNames } from '../../defaults/classNames'
+import { generateClassNames } from '../../utils/classNames'
 import type { MentionSuggestion } from './RichTextEditor'
 
 // ─── Imperative handle ───────────────────────────────────────────────────────
@@ -50,9 +54,20 @@ export interface MentionSuggestionListProps
   noResultsText?: string
 
   /**
-   * Extra CSS class applied to the outermost container.
+   * CSS class names for each styleable part of the suggestion dropdown.
+   *
+   * Use `generateClassNames()` to merge with the built-in defaults:
+   * @example
+   * ```tsx
+   * import { generateClassNames, defaultSuggestionClassNames } from 'bsky-richtext-react'
+   *
+   * classNames={generateClassNames([
+   *   defaultSuggestionClassNames,
+   *   { item: 'px-3 py-2', itemSelected: 'bg-blue-50' },
+   * ], cn)}
+   * ```
    */
-  className?: string
+  classNames?: Partial<SuggestionClassNames>
 }
 
 // ─── Component ───────────────────────────────────────────────────────────────
@@ -60,14 +75,9 @@ export interface MentionSuggestionListProps
 /**
  * Default mention suggestion dropdown rendered by `RichTextEditor`.
  *
- * Consumers can import and render this themselves (wrapped in their own styles),
- * or pass a completely custom `renderMentionSuggestion` factory to the editor.
- *
- * @example Override the no-results text
- * ```tsx
- * // This is handled internally via the default renderer.
- * // To fully customize, pass renderMentionSuggestion to RichTextEditor.
- * ```
+ * Consumers can pass `classNames` to style specific parts, or pass a completely
+ * custom `renderMentionSuggestion` factory to the editor to replace this
+ * component entirely.
  */
 export const MentionSuggestionList = forwardRef<
   MentionSuggestionListRef,
@@ -78,11 +88,19 @@ export const MentionSuggestionList = forwardRef<
     command,
     showAvatars = true,
     noResultsText = 'No results',
-    className,
+    classNames: classNamesProp,
   },
   ref,
 ) {
   const [selectedIndex, setSelectedIndex] = useState(0)
+
+  // Merge provided classNames with defaults.
+  // Memoized via JSON.stringify so inline object literals don't recalculate every render.
+  const cn = useMemo(
+    () => generateClassNames([defaultSuggestionClassNames, classNamesProp]),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [JSON.stringify(classNamesProp)],
+  )
 
   // Reset selection when items change (new query results arrived)
   useEffect(() => {
@@ -131,47 +149,48 @@ export const MentionSuggestionList = forwardRef<
 
   return (
     <div
-      data-bsky-mention-suggestions
-      className={className}
+      className={cn.root}
       // Prevent the editor from losing focus when clicking a suggestion
       onMouseDown={(e) => e.preventDefault()}
     >
       {items.length === 0 ? (
-        <div data-bsky-mention-suggestion-empty>{noResultsText}</div>
+        <div className={cn.empty}>{noResultsText}</div>
       ) : (
         items.map((item, index) => {
           const isSelected = index === selectedIndex
+          const itemClass = isSelected
+            ? `${cn.item ?? ''} ${cn.itemSelected ?? ''}`.trim()
+            : cn.item
 
           return (
             <button
               key={item.did}
               type="button"
-              data-bsky-mention-suggestion-item
-              data-selected={isSelected || undefined}
+              className={itemClass}
               onMouseEnter={() => setSelectedIndex(index)}
               onClick={() => selectItem(index)}
             >
               {showAvatars && (
-                <span data-bsky-mention-avatar>
+                <span className={cn.avatar}>
                   {item.avatarUrl ? (
                     <img
                       src={item.avatarUrl}
                       alt={item.displayName ?? item.handle}
-                      data-bsky-mention-avatar-img
+                      className={cn.avatarImg}
                     />
                   ) : (
-                    <span data-bsky-mention-avatar-placeholder aria-hidden="true">
+                    <span className={cn.avatarPlaceholder} aria-hidden="true">
                       {(item.displayName ?? item.handle).charAt(0).toUpperCase()}
                     </span>
                   )}
                 </span>
               )}
 
-              <span data-bsky-mention-suggestion-text>
+              <span className={cn.text}>
                 {item.displayName && (
-                  <span data-bsky-mention-suggestion-name>{item.displayName}</span>
+                  <span className={cn.name}>{item.displayName}</span>
                 )}
-                <span data-bsky-mention-suggestion-handle>@{item.handle}</span>
+                <span className={cn.handle}>@{item.handle}</span>
               </span>
             </button>
           )

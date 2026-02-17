@@ -155,9 +155,9 @@ describe('RichTextDisplay', () => {
     expect(root.tagName).toBe('SPAN')
   })
 
-  it('has data-bsky-richtext attribute on root', () => {
+  it('has default bsky-richtext class on root', () => {
     render(<RichTextDisplay value="test" data-testid="root" />)
     const root = screen.getByTestId('root')
-    expect(root).toHaveAttribute('data-bsky-richtext')
+    expect(root).toHaveClass('bsky-richtext')
   })
 })
