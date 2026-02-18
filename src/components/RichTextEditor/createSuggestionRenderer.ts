@@ -2,7 +2,7 @@
  * createSuggestionRenderer
  *
  * Factory that returns a TipTap `SuggestionOptions['render']` function.
- * It uses `tippy.js` for cursor-anchored positioning and `ReactRenderer`
+ * It uses `@floating-ui/dom` for cursor-anchored positioning and `ReactRenderer`
  * to mount the `MentionSuggestionList` React component into the popup.
  *
  * Heavily inspired by Bluesky's social-app Autocomplete.tsx and the
@@ -56,7 +56,7 @@ export interface DefaultSuggestionRendererOptions {
  * (i.e. each time the user types "@" and a popup should open/update/close).
  *
  * It follows the same lifecycle pattern as the Bluesky reference:
- *  - `onStart`  → Mount ReactRenderer, create tippy popup
+ *  - `onStart`  → Mount ReactRenderer, create floating-ui popup
  *  - `onUpdate` → Update props, reposition popup
  *  - `onKeyDown`→ Delegate to the MentionSuggestionList imperative ref
  *  - `onExit`   → Destroy popup and React renderer

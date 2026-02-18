@@ -3,7 +3,7 @@
  *
  * Builds on `@tiptap/extension-mention` and wires up:
  *  - Consumer-supplied `onMentionQuery` for fetching suggestions
- *  - Default popup renderer (tippy.js + MentionSuggestionList) when no
+ *  - Default popup renderer (@floating-ui/dom + MentionSuggestionList) when no
  *    custom `renderMentionSuggestion` is provided
  *
  * Heavily inspired by Bluesky's social-app TextInput.web.tsx and Autocomplete.tsx.
@@ -28,7 +28,7 @@ export interface BskyMentionOptions {
 
   /**
    * Custom TipTap `suggestion.render` factory.
-   * When provided, replaces the default tippy.js + MentionSuggestionList renderer.
+   * When provided, replaces the default @floating-ui/dom + MentionSuggestionList renderer.
    * When omitted, the built-in renderer is used.
    */
   renderSuggestionList?: SuggestionOptions['render']
@@ -62,8 +62,7 @@ export function createBskyMentionExtension({
   mentionClass = 'bsky-editor-mention',
 }: BskyMentionOptions) {
   // Use the consumer-supplied renderer, or fall back to our built-in one.
-  const render =
-    renderSuggestionList ?? createDefaultSuggestionRenderer(defaultRendererOptions)
+  const render = renderSuggestionList ?? createDefaultSuggestionRenderer(defaultRendererOptions)
 
   return Mention.configure({
     HTMLAttributes: {
@@ -80,9 +79,7 @@ export function createBskyMentionExtension({
      */
     renderLabel({ options, node }) {
       const handle =
-        (node.attrs.label as string | undefined) ??
-        (node.attrs.id as string | undefined) ??
-        ''
+        (node.attrs.label as string | undefined) ?? (node.attrs.id as string | undefined) ?? ''
       return `${options.suggestion.char ?? '@'}${handle}`
     },
 
