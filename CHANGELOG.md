@@ -7,6 +7,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2.0.0] — 2026-02-18
+
+### Breaking Changes
+
+- **Upgraded all `@tiptap/*` dependencies from v2 to v3** (`^3.20.0`). Consumers must update their installed `@tiptap/*` packages to v3.
+- **Replaced `tippy.js` with `@floating-ui/dom`** for mention suggestion popup positioning, aligning with the tiptap v3 ecosystem. The `tippy.js` peer dependency has been removed.
+- **Peer dependency requirements changed**: consumers must install `@tiptap/*@^3.20.0` and `@floating-ui/dom@^1.6.0`. The `tippy.js` peer dependency is no longer required.
+
+### Why
+
+- Fixes Turbopack build failures in Next.js 16+ when the consumer's dependency tree includes tiptap v3 packages (e.g., via `@tiptap/starter-kit@3.x`). Turbopack's strict static export analysis caught that `@tiptap/extension-list@3.x` imports symbols from `@tiptap/core` that don't exist in v2.
+- Aligns with the tiptap v3 ecosystem (`tippy.js` → `@floating-ui/dom`).
+
+### Migration
+
+```diff
+- "@tiptap/core": "^2.x.x",
++ "@tiptap/core": "^3.20.0",
+  // repeat for all @tiptap/* packages
+
+- "tippy.js": "^6.x.x",
++ "@floating-ui/dom": "^1.6.0",
+```
+
+---
+
 ## [1.1.0] — 2026-02-17
 
 ### Changed
