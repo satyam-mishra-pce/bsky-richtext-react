@@ -13,8 +13,7 @@
  * a custom `renderMentionSuggestion` prop to `<RichTextEditor>`.
  */
 
-import type { Instance as TippyInstance } from 'tippy.js'
-import tippy from 'tippy.js'
+import { computePosition, flip, offset, shift } from '@floating-ui/dom'
 import { ReactRenderer } from '@tiptap/react'
 import type { SuggestionOptions, SuggestionProps } from '@tiptap/suggestion'
 import type { SuggestionClassNames } from '../../types/classNames'
@@ -67,18 +66,9 @@ export function createDefaultSuggestionRenderer(
 ): SuggestionOptions<MentionSuggestion>['render'] {
   return () => {
     let renderer: ReactRenderer<MentionSuggestionListRef, MentionSuggestionListProps> | undefined
-    let popup: TippyInstance[] | undefined
+    let popup: HTMLDivElement | undefined
 
-    const destroy = () => {
-      popup?.[0]?.destroy()
-      renderer?.destroy()
-      renderer = undefined
-      popup = undefined
-    }
-
-    const buildProps = (
-      props: SuggestionProps<MentionSuggestion>,
-    ): MentionSuggestionListProps => ({
+    const buildProps = (props: SuggestionProps<MentionSuggestion>): MentionSuggestionListProps => ({
       ...props,
       showAvatars: options.showAvatars ?? true,
       noResultsText: options.noResultsText ?? 'No results',
@@ -94,43 +84,53 @@ export function createDefaultSuggestionRenderer(
 
         if (!props.clientRect) return
 
-        // Create the tippy popup anchored to the cursor position.
-        // Matches the Bluesky reference: tippy('body', { ... })
-        //
-        // We call tippy with a CSS selector string ('body') which uses the
-        // MultipleTargets overload and returns Instance[]. The tippy type
-        // definitions don't expose a string-selector overload directly, so
-        // we cast through unknown to keep things clean.
-        //
-        // tippy's getReferenceClientRect expects `() => DOMRect | ClientRect`,
-        // but TipTap's clientRect can return null — we guard that here.
         const clientRect = props.clientRect
-        popup = tippy('body', {
-          getReferenceClientRect: () => clientRect?.() ?? new DOMRect(),
-          appendTo: () => document.body,
-          content: renderer.element,
-          showOnCreate: true,
-          interactive: true,
-          trigger: 'manual',
+
+        // Create a wrapper div with fixed positioning (viewport-relative coords
+        // from clientRect) and append the ReactRenderer's element into it.
+        popup = document.createElement('div')
+        popup.style.position = 'fixed'
+        popup.style.zIndex = '9999'
+        popup.appendChild(renderer.element)
+        document.body.appendChild(popup)
+
+        // Create a virtual reference element for @floating-ui/dom.
+        const virtualEl = { getBoundingClientRect: () => clientRect?.() ?? new DOMRect() }
+
+        void computePosition(virtualEl, popup, {
           placement: 'bottom-start',
-        }) as unknown as TippyInstance[]
+          middleware: [offset(8), flip(), shift({ padding: 8 })],
+        }).then(({ x, y }) => {
+          if (popup) {
+            popup.style.left = `${x}px`
+            popup.style.top = `${y}px`
+          }
+        })
       },
 
       onUpdate(props: SuggestionProps<MentionSuggestion>) {
         renderer?.updateProps(buildProps(props))
 
-        if (!props.clientRect) return
+        if (!props.clientRect || !popup) return
 
         const clientRect = props.clientRect
-        popup?.[0]?.setProps({
-          getReferenceClientRect: () => clientRect?.() ?? new DOMRect(),
+        const virtualEl = { getBoundingClientRect: () => clientRect?.() ?? new DOMRect() }
+
+        void computePosition(virtualEl, popup, {
+          placement: 'bottom-start',
+          middleware: [offset(8), flip(), shift({ padding: 8 })],
+        }).then(({ x, y }) => {
+          if (popup) {
+            popup.style.left = `${x}px`
+            popup.style.top = `${y}px`
+          }
         })
       },
 
       onKeyDown(props) {
         // Escape dismisses without selecting
         if (props.event.key === 'Escape') {
-          popup?.[0]?.hide()
+          if (popup) popup.style.display = 'none'
           return true
         }
         // All other keys delegated to the list component
@@ -138,7 +138,10 @@ export function createDefaultSuggestionRenderer(
       },
 
       onExit() {
-        destroy()
+        popup?.remove()
+        renderer?.destroy()
+        popup = undefined
+        renderer = undefined
       },
     }
   }
