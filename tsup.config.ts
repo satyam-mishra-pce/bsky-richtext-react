@@ -43,8 +43,8 @@ export default defineConfig({
     // ProseMirror — same reason; regex covers all prosemirror-* sub-packages
     /^prosemirror-.*/,
     // Other dependencies that must be singleton instances
-    'tippy.js',
     '@atproto/api',
+    '@floating-ui/dom',
   ],
 
   // Minify for production builds
