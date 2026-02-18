@@ -39,7 +39,7 @@ export type {
 } from './components/RichTextEditor'
 
 /**
- * Factory for the default tippy.js suggestion renderer.
+ * Factory for the default @floating-ui/dom suggestion renderer.
  * Useful if you want to compose your own mention extension setup.
  */
 export { createDefaultSuggestionRenderer } from './components/RichTextEditor'

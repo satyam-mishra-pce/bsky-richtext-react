@@ -133,7 +133,7 @@ export interface RichTextEditorProps extends Omit<HTMLAttributes<HTMLDivElement>
 
   /**
    * Custom TipTap `suggestion.render` factory.
-   * When provided, replaces the default tippy.js + MentionSuggestionList renderer.
+   * When provided, replaces the default @floating-ui/dom + MentionSuggestionList renderer.
    * The factory must return `{ onStart, onUpdate, onKeyDown, onExit }`.
    *
    * See: https://tiptap.dev/docs/editor/extensions/nodes/mention#usage

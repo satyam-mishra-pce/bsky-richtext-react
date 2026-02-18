@@ -10,7 +10,7 @@
  *
  * TipTap requires the `render` factory to return lifecycle callbacks
  * ({ onStart, onUpdate, onKeyDown, onExit }). The component itself is mounted
- * via `ReactRenderer` and positioned via `tippy.js` — see createSuggestionRenderer.ts.
+ * via `ReactRenderer` and positioned via `@floating-ui/dom` — see createSuggestionRenderer.ts.
  */
 
 import { forwardRef, useEffect, useImperativeHandle, useMemo, useState } from 'react'
