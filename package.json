@@ -69,22 +69,25 @@
     "react": "^18.0.0 || ^19.0.0",
     "react-dom": "^18.0.0 || ^19.0.0",
     "@atproto/api": "^0.13.16",
-    "@tiptap/core": "^2.11.5",
-    "@tiptap/extension-document": "^2.11.5",
-    "@tiptap/extension-hard-break": "^2.11.5",
-    "@tiptap/extension-history": "^2.11.5",
-    "@tiptap/extension-mention": "^2.11.5",
-    "@tiptap/extension-paragraph": "^2.11.5",
-    "@tiptap/extension-placeholder": "^2.11.5",
-    "@tiptap/extension-text": "^2.11.5",
-    "@tiptap/react": "^2.11.5",
-    "tippy.js": "^6.3.7"
+    "@floating-ui/dom": "^1.6.0",
+    "@tiptap/core": "^3.20.0",
+    "@tiptap/extension-document": "^3.20.0",
+    "@tiptap/extension-hard-break": "^3.20.0",
+    "@tiptap/extension-history": "^3.20.0",
+    "@tiptap/extension-mention": "^3.20.0",
+    "@tiptap/extension-paragraph": "^3.20.0",
+    "@tiptap/extension-placeholder": "^3.20.0",
+    "@tiptap/extension-text": "^3.20.0",
+    "@tiptap/react": "^3.20.0"
   },
   "peerDependenciesMeta": {
     "react-dom": {
       "optional": false
     },
     "@atproto/api": {
+      "optional": false
+    },
+    "@floating-ui/dom": {
       "optional": false
     },
     "@tiptap/core": {
@@ -113,23 +116,20 @@
     },
     "@tiptap/react": {
       "optional": false
-    },
-    "tippy.js": {
-      "optional": false
     }
   },
   "dependencies": {
     "@atproto/api": "^0.13.16",
-    "@tiptap/core": "^2.11.5",
-    "@tiptap/extension-document": "^2.11.5",
-    "@tiptap/extension-hard-break": "^2.11.5",
-    "@tiptap/extension-history": "^2.11.5",
-    "@tiptap/extension-mention": "^2.11.5",
-    "@tiptap/extension-paragraph": "^2.11.5",
-    "@tiptap/extension-placeholder": "^2.11.5",
-    "@tiptap/extension-text": "^2.11.5",
-    "@tiptap/react": "^2.11.5",
-    "tippy.js": "^6.3.7"
+    "@floating-ui/dom": "^1.6.0",
+    "@tiptap/core": "^3.20.0",
+    "@tiptap/extension-document": "^3.20.0",
+    "@tiptap/extension-hard-break": "^3.20.0",
+    "@tiptap/extension-history": "^3.20.0",
+    "@tiptap/extension-mention": "^3.20.0",
+    "@tiptap/extension-paragraph": "^3.20.0",
+    "@tiptap/extension-placeholder": "^3.20.0",
+    "@tiptap/extension-text": "^3.20.0",
+    "@tiptap/react": "^3.20.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.18.0",
@@ -145,7 +145,6 @@
     "@testing-library/user-event": "^14.5.2",
     "@types/react": "^19.0.7",
     "@types/react-dom": "^19.0.3",
-    "@types/tippy.js": "^6.3.0",
     "@vitejs/plugin-react": "^4.3.4",
     "@vitest/coverage-v8": "^3.0.2",
     "@vitest/ui": "^3.0.2",
