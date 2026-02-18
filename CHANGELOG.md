@@ -33,6 +33,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2.0.0] — 2026-02-18
+
+### Breaking Changes
+
+- **tiptap upgraded from v2 to v3** — all `@tiptap/*` peer dependencies must be updated to `^3.20.0`.
+- **`tippy.js` replaced with `@floating-ui/dom`** — the mention suggestion popup now uses `@floating-ui/dom` for positioning. Remove `tippy.js` from your dependencies and install `@floating-ui/dom` instead.
+
+### Migration
+
+```diff
+- bun add @tiptap/core@^2 @tiptap/react@^2 ... tippy.js
++ bun add @tiptap/core@^3.20.0 @tiptap/react@^3.20.0 ... @floating-ui/dom
+```
+
+Update all `@tiptap/*` peer dependencies to `^3.20.0` and replace `tippy.js` with `@floating-ui/dom`.
+
+---
+
 ## [1.1.0] — 2026-02-17
 
 ### Changed

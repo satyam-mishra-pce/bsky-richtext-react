@@ -36,7 +36,16 @@ pnpm add bsky-richtext-react
 Peer dependencies (if not already installed):
 
 ```bash
-bun add react react-dom
+bun add react react-dom @floating-ui/dom \
+  @tiptap/core@^3.20.0 \
+  @tiptap/extension-document@^3.20.0 \
+  @tiptap/extension-hard-break@^3.20.0 \
+  @tiptap/extension-history@^3.20.0 \
+  @tiptap/extension-mention@^3.20.0 \
+  @tiptap/extension-paragraph@^3.20.0 \
+  @tiptap/extension-placeholder@^3.20.0 \
+  @tiptap/extension-text@^3.20.0 \
+  @tiptap/react@^3.20.0
 ```
 
 ---
@@ -224,7 +233,7 @@ import { RichTextEditor } from 'bsky-richtext-react'
 | `onMentionQuery` | `(query: string) => Promise<MentionSuggestion[]>` | **Bluesky public API** | Custom mention search. Overrides the built-in search. |
 | `mentionSearchDebounceMs` | `number` | `300` | Debounce delay (ms) for the built-in search. No effect when `onMentionQuery` is set. |
 | `disableDefaultMentionSearch` | `boolean` | `false` | Disable the built-in Bluesky API search entirely |
-| `renderMentionSuggestion` | `SuggestionOptions['render']` | tippy.js popup | Custom TipTap suggestion renderer factory |
+| `renderMentionSuggestion` | `SuggestionOptions['render']` | @floating-ui/dom popup | Custom TipTap suggestion renderer factory |
 | `mentionSuggestionOptions` | `DefaultSuggestionRendererOptions` | — | Options forwarded to the default renderer |
 | `editorRef` | `Ref<RichTextEditorRef>` | — | Imperative ref |
 | `editable` | `boolean` | `true` | Toggle read-only mode |
@@ -281,7 +290,7 @@ The editor searches Bluesky actors **by default** when the user types `@`:
 
 ### `<MentionSuggestionList>`
 
-The default suggestion dropdown rendered inside the tippy.js popup. Exported so you can reuse or reference it in your own popup implementation.
+The default suggestion dropdown rendered inside the @floating-ui/dom popup. Exported so you can reuse or reference it in your own popup implementation.
 
 ```tsx
 import { MentionSuggestionList } from 'bsky-richtext-react'
@@ -504,6 +513,24 @@ bun run lint
 # Format
 bun run format
 ```
+
+---
+
+## Migration
+
+### v2.0.0 — tiptap v3 upgrade
+
+**v2.0.0 upgrades tiptap from v2 to v3.** If you are upgrading from v1.x, you must:
+
+1. Update all `@tiptap/*` peer dependencies to `^3.20.0`.
+2. Replace `tippy.js` with `@floating-ui/dom`.
+
+```diff
+- bun add @tiptap/core@^2 @tiptap/react@^2 tippy.js
++ bun add @tiptap/core@^3.20.0 @tiptap/react@^3.20.0 @floating-ui/dom
+```
+
+See [CHANGELOG.md](./CHANGELOG.md) for the full list of changes.
 
 ---
 
